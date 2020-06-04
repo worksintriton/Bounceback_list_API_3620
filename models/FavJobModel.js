@@ -29,7 +29,7 @@ var FavJobSchema = new mongoose.Schema({
 
   Number_of_Openings: String,
 
-  Type_of_Role: String,
+  Type_of_Role: Array,
 
   Reporting_To : String,
 
