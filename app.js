@@ -106,7 +106,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/api/',express.static(path.join(__dirname, 'public')));
 
 app.use('/api/', UserRouter);
 app.use('/api/country', CountryRouter);
