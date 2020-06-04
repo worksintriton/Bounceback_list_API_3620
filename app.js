@@ -34,7 +34,7 @@ var facjobsRouter = require('./routes/FavJob.routes');
 
 
 
-var BaseUrl = "http://3.101.79.54"; 
+var BaseUrl = "https://bouncebacklist.com/api"; 
 
 const mongoose = require('mongoose'); 
 mongoose.connect('mongodb://localhost:27017/Omam'); 
