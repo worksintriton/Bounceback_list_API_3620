@@ -57,7 +57,7 @@ router.post('/register', async function(req, res) {
        if(req.body.Type == 0){
 
         data={
-          link: 'http://bouncebacklist.com/#/home/email_verfication/'+ req.body.Email + '_candidate_' + Verification_Code,
+          link: 'https://bouncebacklist.com/#/home/email_verfication/'+ req.body.Email + '_candidate_' + Verification_Code,
           username: req.body.Name
         };
         let mail = await Mailer.sendEmail(req.body.Email, "BounceBack List - Please Verify your email.","addUser", data);
@@ -75,7 +75,7 @@ router.post('/register', async function(req, res) {
           Name_of_the_person: req.body.Name
         }
         data = {
-           link: 'http://bouncebacklist.com/#/home/email_verfication/'+ req.body.Email + '_company_' + Verification_Code,
+           link: 'https://bouncebacklist.com/#/home/email_verfication/'+ req.body.Email + '_company_' + Verification_Code,
            username: req.body.Name
         }
         let mail = await Mailer.sendEmail(req.body.Email, "BounceBack List - Please Verify your email.", "addUser" ,data);
