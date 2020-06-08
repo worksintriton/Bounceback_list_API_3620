@@ -9,12 +9,12 @@ var ShortlistedModel = require('./../models/ShortlistedModel');
 router.post('/create', async function(req, res) {
   try{
 
-        await ShortlistedModel.create({
-            
-		  Company_Id: req.body.Company_Id,
+        await ShortlistedModel.create({          
+	Company_Id: req.body.Company_Id,
   Company_Email:  req.body.Company_Email,
   Job_post_id: req.body.Job_post_id,
-	 Candidate_id: req.body.Candidate_id,
+	Candidate_id: req.body.Candidate_id,
+  
   nameTitle:req.body.nameTitle,
   fname: req.body.fname,
   lname: req.body.lname,
