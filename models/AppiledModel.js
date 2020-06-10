@@ -56,7 +56,6 @@ var AppliedSchema = new mongoose.Schema({
 	  positing_this_job: String,
 
 
-
       nameTitle: String,
   fname:String,
   lname: String,
@@ -123,7 +122,10 @@ var AppliedSchema = new mongoose.Schema({
    expectedannu: String,
    totalexp: String,
 
-  
+
+
+
+
 });
 mongoose.model('Appiled', AppliedSchema);
 

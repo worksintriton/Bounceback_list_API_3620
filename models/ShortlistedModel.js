@@ -7,7 +7,6 @@ var ShortlistedSchema = new mongoose.Schema({
   Company_Email:  String,
   Job_post_id: String,
 	  Candidate_id: String,
-    
   nameTitle: String,
   fname:String,
   lname: String,

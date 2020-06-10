@@ -41,7 +41,7 @@ router.post('/edit', function (req, res) {
 });
 // // DELETES A USER FROM THE DATABASE
 router.post('/delete', function (req, res) {
-      LanguageModel.findByIdAndRemove(req.body.Subfunction_id, function (err, user) {
+      LanguageModel.findByIdAndRemove(req.body.Language_id, function (err, user) {
           if (err) return res.json({Status:"Failed",Message:"Internal Server Error", Data : {},Code:500});
           res.json({Status:"Success",Message:"Language Deleted successfully", Data : {} ,Code:200});
       });

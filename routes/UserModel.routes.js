@@ -13,6 +13,9 @@ var hbs = require('nodemailer-express-handlebars');
 const randomstring = require('randomstring');
 
 
+var CandidateModel = require('./../models/CandidateModel');
+var CompanySignupModel = require('./../models/CompanySignupModel');
+
 ///////Mail Config/////
 var ForgotPassword = require('./../helpers/forgotpassword.helper');
 
@@ -57,7 +60,7 @@ router.post('/register', async function(req, res) {
        if(req.body.Type == 0){
 
         data={
-          link: 'https://bouncebacklist.com/#/home/email_verfication/'+ req.body.Email + '_candidate_' + Verification_Code,
+		link: 'https://bouncebacklist.com/#/home/email_verfication/'+ req.body.Email + '_candidate_' + Verification_Code,
           username: req.body.Name
         };
         let mail = await Mailer.sendEmail(req.body.Email, "BounceBack List - Please Verify your email.","addUser", data);
@@ -216,6 +219,109 @@ router.post('/forgotpassword', async function(req, res) {
 
 
 
+router.get('/dashboard_counts', function (req, res) {
+        UserModel.find({}, function (err, users) {
+           if (err) return res.json({Status:"Failed",Message:"Internal Server Error", Data : {},Code:500}); 
+           var Candidate_count = 0 ;
+           var Candidate_verified_count = 0 ;
+           var Candidate_not_verified_count = 0 ;
+           var Candidate_last_7 = 0 ;
+           var Candidate_last_24 = 0;
+           var Candidate_Last_30 = 0;
+           var Company_count = 0 ;
+           var Company_last_7 = 0 ;
+           var Company_last_24 = 0;
+           var Company_Last_30 = 0;
+           var Company_verified_count = 0 ;
+           var Company_not_verified_count = 0 ;
+           var CurrentDate = new Date();
+           var twentyfour = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
+           var seventhday = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+           var thirdthday = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        CandidateModel.find({Verification_Status:"verified"}, function (err, candidate_verified) {
+          console.log(candidate_verified);
+          Candidate_verified_count = candidate_verified.length;
+           CandidateModel.find({Verification_Status:"not verified"}, function (err, candidate_not_verified) {
+            console.log(candidate_not_verified);
+          Candidate_not_verified_count = candidate_not_verified.length;
+          CompanySignupModel.find({Verification_Status:"verified"}, function (err, company_verified) {
+            console.log(company_verified);
+          Company_verified_count = company_verified.length;
+          CompanySignupModel.find({Verification_Status:"not verified"}, function (err, company_not_verified) {
+            console.log(company_not_verified);
+          Company_not_verified_count = company_not_verified.length;
+                console.log(CurrentDate);
+               for(let a  = 0 ; a < users.length ; a++){
+                   if(users[a].Type == 0){
+                      Candidate_count = Candidate_count + 1 ;
+                   var GivenDate =  users[a].Date;
+                   console.log(GivenDate,seventhday);
+                  if (seventhday < GivenDate){
+                     Candidate_last_7 = Candidate_last_7 + 1;
+                   }
+                      if (thirdthday < GivenDate){
+                     Candidate_Last_30 = Candidate_Last_30 + 1;
+                   } 
+                   if(twentyfour < GivenDate){
+                    Candidate_last_24 =  Candidate_last_24 + 1;
+                   }
+                   }
+                   if (users[a].Type == 1){
+                  Company_count =  Company_count + 1 ;
+                  var GivenDate =  users[a].Date;
+                  console.log(GivenDate,twentyfour,seventhday,thirdthday);
+                  console.log(GivenDate,seventhday)
+                   if (seventhday < GivenDate){
+                     Company_last_7 = Company_last_7 + 1;
+                     console.log("7 In");
+                   }
+                     console.log(GivenDate,thirdthday)
+                    if (thirdthday < GivenDate){
+                     Company_Last_30 = Company_Last_30 + 1;
+                      console.log("30 In");
+                   }
+                    console.log(GivenDate,twentyfour)
+                    if(twentyfour < GivenDate){
+                    Company_last_24 =  Company_last_24 + 1;
+                     console.log("24 In");
+                   }
+                   }
+               if(a == users.length - 1){
+                  res.json({Status:"Success",Message:"Data Count", 
+                  Candidate_count : Candidate_count,
+                  Candidate_verified_count : Candidate_verified_count,
+                  Candidate_not_verified_count : Candidate_not_verified_count,
+                  Candidate_last_7 : Candidate_last_7,
+                  Candidate_last_24 : Candidate_last_24,
+                  Candidate_Last_30 : Candidate_Last_30,
+                  Company_count : Company_count,
+                  Company_last_7 : Company_last_7,
+                  Company_last_24 : Company_last_24,
+                  Company_Last_30 : Company_Last_30,
+                  Company_verified_count : Company_verified_count,
+                  Company_not_verified_count : Company_not_verified_count
+                   ,Code:200});
+               }
+               }
+        });
+        });
+        });
+        });
+        });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -265,6 +371,50 @@ router.get('/deletes', function (req, res) {
 
 
 
+router.get('/CompanySignupModel', function (req, res) {
+        CompanySignupModel.find({}, function (err, StateList) {
+            if (err) return res.json({Status:"Failed",Message:"Internal Server Error", Data : {},Code:500}); 
+                var  datas = [];
+		for(var a = 0 ; a < StateList.length ; a ++) {
+            datas.push(StateList[a].email);
+             if(a == StateList.length - 1){
+                res.json({Status:"Success",Message:"State List", Data : datas ,Code:200});
+             }
+         }
+        });
+});
+
+
+
+router.get('/CandidateModel', function (req, res) {
+        CandidateModel.find({}, function (err, StateList) {
+            if (err) return res.json({Status:"Failed",Message:"Internal Server Error", Data : {},Code:500}); 
+              var  datas = [];
+		for(var a = 0 ; a < StateList.length ; a ++) {
+            datas.push(StateList[a].email);
+             if(a == StateList.length - 1){
+                res.json({Status:"Success",Message:"State List", Data : datas ,Code:200});
+             }
+         } 
+        });
+});
+
+
+
+
+
+
+router.post('/usercandilist', function (req, res) {
+        UserModel.find({Type:req.body.Type}, function (err, StateList) {
+       var  datas = [];
+         for(var a = 0 ; a < StateList.length ; a ++) {
+            datas.push(StateList[a].Email);
+             if(a == StateList.length - 1){
+                res.json({Status:"Success",Message:"State List", Data : datas ,Code:200});
+             }
+         }
+        });
+});
 
 
 

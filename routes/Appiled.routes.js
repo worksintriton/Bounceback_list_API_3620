@@ -35,8 +35,8 @@ router.post('/create', async function(req, res) {
             Appiled_At: req.body.Appiled_At,
             Job_Id: req.body.Job_Id,
             Job_Description: req.body.Job_Description, 
-		        positing_this_job: req.body.positing_this_job,
-  
+		positing_this_job: req.body.positing_this_job,
+
   nameTitle:req.body.nameTitle,
   fname: req.body.fname,
   lname: req.body.lname,
@@ -102,6 +102,12 @@ router.post('/create', async function(req, res) {
    Verification_Code: req.body.Verification_Code,
    expectedannu: req.body.expectedannu,
    totalexp: req.body.totalexp,
+
+
+
+
+
+
         }, 
         function (err, user) {
           console.log(user)
@@ -127,15 +133,11 @@ router.post('/getlist_id', function (req, res) {
         });
 });
 
-
 router.post('/getjobappliedlist_id', function (req, res) {
         AppiledModel.find({Job_Id:req.body.Job_Id}, function (err, StateList) {
           res.json({Status:"Success",Message:"Job applied List", Data : StateList ,Code:200});
         });
 });
-
-
-
 
 router.get('/deletes', function (req, res) {
       AppiledModel.remove({}, function (err, user) {

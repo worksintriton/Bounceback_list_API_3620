@@ -32,6 +32,7 @@ var specializationRouter = require('./routes/Specialization.routes');
 var facjobsRouter = require('./routes/FavJob.routes');
 
 
+var GenShortlistedRouter = require('./routes/GenShortlisted.routes');
 
 
 var BaseUrl = "https://bouncebacklist.com/api"; 
@@ -132,6 +133,7 @@ app.use('/api/course', courseRouter);
 app.use('/api/coursetype', coursetypeRouter);
 app.use('/api/language', languageRouter);
 app.use('/api/specialization', specializationRouter);
+app.use ('/api/GenShortlistedRouter', GenShortlistedRouter);
 
 
 // catch 404 and forward to error handlers
