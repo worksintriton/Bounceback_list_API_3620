@@ -3,6 +3,13 @@ var router = express.Router();
 var nodemailer = require('nodemailer');
 var Mailer = require('./../helpers/user.helper');
 var ForgotMailer = require('./../helpers/email.helper');
+
+
+var CanWelcomeMailer = require('./../helpers/canwelcome.helper');
+var ComWelcomeMailer = require('./../helpers/comwelcome.helper');
+
+
+
 var bodyParser = require('body-parser');
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
@@ -20,16 +27,24 @@ var CompanySignupModel = require('./../models/CompanySignupModel');
 var ForgotPassword = require('./../helpers/forgotpassword.helper');
 
 
+var CandidateMailer = require('./../helpers/candidateuser.helper');
+var CompanyMailer = require('./../helpers/companyuser.helper');
+
+
 var JobpostingModel = require('./../models/JobpostingModel');
 var FavJobModel = require('./../models/FavJobModel');
 var ShortlistedModel = require('./../models/ShortlistedModel');
 var AppiledModel = require('./../models/AppiledModel');
 
+
+
+
 router.post('/register', async function(req, res) {
   try{
      var checkData = await UserModel.findOne({Email:req.body.Email});
-     // var Verification_Code = randomstring.generate(7);
-     var Verification_Code = Math.floor(Math.random() * 100000) + 1;
+    //  var Verification_Code = randomstring.generate(7);
+
+	       var Verification_Code = Math.floor(Math.random() * 100000) + 1;
      if(checkData !== null){
            res.json({Status:"Failed",Message:"Email id already exists", Data : {},Code:300}); 
         }
@@ -47,41 +62,50 @@ router.post('/register', async function(req, res) {
        async  function (err, user) {
            if (err) return res.json({Status:"Failed",Message:"There was a problem in registering. Try again", Data : user,Code:300});
     else{
-   var string = req.body.Name.split(" ");
-         let fields = {   
+	 var string = req.body.Name.split(" ");
+         let fields = {		
           resume_upload_St:"0",
           delete_st:"0",
-          fname: string[0],
+	  fname: string[0],
           lname: string[1],
           Verification_Code: Verification_Code,
           email:req.body.Email,
           phone : req.body.Phone
         }
        if(req.body.Type == 0){
-  //       data={
-    // link: 'https://bouncebacklist.com/#/home/email_verfication/'+ req.body.Email + '_candidate_' + Verification_Code,
-  //         username: req.body.Name
-  //       };
-        // let mail = await Mailer.sendEmail(req.body.Email, "BounceBack List - Please Verify your email.","addUser", data);
+
+       // data={
+	//	link: 'https://bouncebacklist.com/#/home/email_verfication/'+ req.body.Email + '_candidate_' + Verification_Code,
+         // username: req.body.Name
+       // };
+      //  let mail = await Mailer.sendEmail(req.body.Email, "BounceBack List - Please Verify your email.","addUser", data);
         let CandidateCode = await CandidateModel.create(fields);
+         data={
+         username: req.body.Name
+        };
+        let mail = await CanWelcomeMailer.sendEmail(req.body.Email, "Welcome to BounceBack List","addUser", data);
         res.json({Status:"Success",Message:"Registration Done successfully", Data :{code: Verification_Code} ,Code:200});
        }
        else
        {
         let fieldscompany = {
-          resume_upload_St:"0",
+	  resume_upload_St:"0",
           delete_st:"0",
           Verification_Code: Verification_Code,
           email:req.body.Email,
           Phone_Number : req.body.Phone,
           Name_of_the_person: req.body.Name
         }
-        // data = {
-        //    link: 'https://bouncebacklist.com/#/home/email_verfication/'+ req.body.Email + '_company_' + Verification_Code,
-        //    username: req.body.Name
-        // }
-        // let mail = await Mailer.sendEmail(req.body.Email, "BounceBack List - Please Verify your email.", "addUser" ,data);
+        //  data = {
+        //   link: 'https://bouncebacklist.com/#/home/email_verfication/'+ req.body.Email + '_company_' + Verification_Code,
+        //   username: req.body.Name
+       // }
+       // let mail = await Mailer.sendEmail(req.body.Email, "BounceBack List - Please Verify your email.", "addUser" ,data);
         let CompanyCode = await CompanyModel.create(fieldscompany);
+                data={
+         username: req.body.Name
+        };
+        let mail = await ComWelcomeMailer.sendEmail(req.body.Email, "Welcome to BounceBack List.","addUser", data);
         res.json({Status:"Success",Message:"Registration Done successfully", Data :{code: Verification_Code} ,Code:200});
        }
         } 
@@ -92,7 +116,6 @@ router.post('/register', async function(req, res) {
      res.json({Status:"Failed",Message:"Internal Server Error", Data :{},Code:500});
    }    
 });
-
 
 
 
@@ -110,32 +133,31 @@ router.post('/login',  async function(req, res) {
       if(check == 0){
           var CandidateCode = await CandidateModel.findOne({email:req.body.Email});
           console.log(CandidateCode.Verification_Status)
-           res.json({Status:"Success",Message:"User Details",data :Datacheck ,data1 :CandidateCode ,Code:200});
-          // if(CandidateCode.Verification_Status == "not verified"){
-          //       res.json({Status:"Failed",Message:"Email Id Not Verified", Data : {},Code:300});
-          // }else {
-          //       res.json({Status:"Success",Message:"User Details",data :Datacheck ,data1 :CandidateCode ,Code:200});
-          // }
+	  res.json({Status:"Success",Message:"User Details",data :Datacheck ,data1 :CandidateCode ,Code:200});
+        //  if(CandidateCode.Verification_Status == "not verified"){
+        //        res.json({Status:"Failed",Message:"Email Id Not Verified", Data : {},Code:300});
+        //  }else {
+        //        res.json({Status:"Success",Message:"User Details",data :Datacheck ,data1 :CandidateCode ,Code:200});
+       //   }
       }
       else{
         console.log("Datain");
        var Companycheck = await CompanyModel.findOne({email:req.body.Email});
           console.log(Companycheck)
           res.json({Status:"Success",Message:"User Details",data :Datacheck ,data1 :Companycheck ,Code:200});
-          // if(Companycheck.Verification_Status == "not verified"){
-          //       res.json({Status:"Failed",Message:"Email Id Not Verified", Data : {},Code:300});
-          // }else {
-          //       res.json({Status:"Success",Message:"User Details", data :Datacheck ,data1 :Companycheck,Code:200});
-          // }
+	      
+        //  if(Companycheck.Verification_Status == "not verified"){
+        //        res.json({Status:"Failed",Message:"Email Id Not Verified", Data : {},Code:300});
+        //  }else {
+        //        res.json({Status:"Success",Message:"User Details", data :Datacheck ,data1 :Companycheck,Code:200});
+        //  }
       }
     }
     }
      catch(e){
        res.json({Status:"Failed",Message:"Internal server issue", Data : e,Code:500});
      }
-});
-
-
+      });
 
 
 router.post('/sendverification',  async function(req, res) {
@@ -147,7 +169,9 @@ router.post('/sendverification',  async function(req, res) {
          username: req.body.Name
         };
         let mail = await Mailer.sendEmail(req.body.Email, "BounceBack List - Please Verify your email.","addUser", data);
-        res.json({Status:"Success",Message:"Registration Done successfully", Data : "Mail Send" ,Code:200});
+      // res.json({Status:"Success",Message:"Registration Done successfully", Data :{code: Verification_Code} ,Code:200});
+		         res.json({Status:"Success",Message:"Registration Done successfully", Data : "Mail Send" ,Code:200});
+
        }
        else
        {
@@ -164,6 +188,17 @@ router.post('/sendverification',  async function(req, res) {
        res.json({Status:"Failed",Message:"Internal server issue", Data : {},Code:500});
      }
 });
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -252,7 +287,6 @@ router.post('/forgotpassword', async function(req, res) {
 
 
 
-
 router.get('/dashboard_counts', function (req, res) {
         UserModel.find({}, function (err, users) {
            if (err) return res.json({Status:"Failed",Message:"Internal Server Error", Data : {},Code:500}); 
@@ -286,7 +320,7 @@ router.get('/dashboard_counts', function (req, res) {
           CandidateModel.find({Verification_Status:"verified"}, function (err, candidate_verified) {
           console.log(candidate_verified);
           Candidate_verified_count = candidate_verified.length;
-          can_verification_list = candidate_verified;
+          can_verification_list  = candidate_verified;
            CandidateModel.find({Verification_Status:"not verified"}, function (err, candidate_not_verified) {
             console.log(candidate_not_verified);
             can_not_verification_list = candidate_not_verified;
@@ -378,7 +412,6 @@ router.get('/dashboard_counts', function (req, res) {
         });
         });
 });
-
 
 
 

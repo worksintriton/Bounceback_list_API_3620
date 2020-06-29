@@ -6,6 +6,10 @@ router.use(bodyParser.json());
 var AppiledModel = require('./../models/AppiledModel');
 
 
+
+var Canjobapplied = require('./../helpers/canjobapplied.helper');
+var Comjobapplied = require('./../helpers/comjobapplied.helper');
+
 router.post('/create', async function(req, res) {
   try{
         await AppiledModel.create({
@@ -102,15 +106,29 @@ router.post('/create', async function(req, res) {
    Verification_Code: req.body.Verification_Code,
    expectedannu: req.body.expectedannu,
    totalexp: req.body.totalexp,
-
-
-
-
-
-
         }, 
-        function (err, user) {
+     async function  (err, user) {
           console.log(user)
+          data={
+         Company_Name: req.body.Company_Name,
+         fname : req.body.fname,
+         companyname : req.body.Company_details[0].lastcompany,
+         lastrole : req.body.Company_details[0].position,
+        };
+        let send  = await Comjobapplied.sendEmail("mohammedimthi2395@gmail.com", "Welcome to BounceBack List","addUser", data);
+
+         var indiaTime = new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"});
+         console.log('India time: '+ (new Date(indiaTime)).toISOString())
+         data1 ={
+         Posting_Recuriting_For: req.body.Posting_Recuriting_For,
+         Company_Name: req.body.Company_Name,
+         fname : req.body.fname,
+         email : req.body.email,
+         phone : req.body.phone,
+         Date :  new Date((new Date(indiaTime)).toISOString()).toLocaleString("en-US"),
+        };
+        let send1  = await Canjobapplied.sendEmail("mohammedimthi2395@gmail.com", "Welcome to BounceBack List","addUser", data1);
+
         res.json({Status:"Success",Message:"Added successfully", Data : user ,Code:200}); 
         });
 }
@@ -126,6 +144,97 @@ router.get('/getlist', function (req, res) {
           res.json({Status:"Success",Message:"Appileddetails", Data : Appileddetails ,Code:200});
         });
 });
+
+
+
+
+router.get('/appliedgetlist', function (req, res) {
+        AppiledModel.find({}, function (err, Appileddetails) {
+          var datas_details = []
+          for(let a = 0 ; a < Appileddetails.length ;  a ++){
+              if(a == 0){
+                let com = {
+                "Job_Id" : Appileddetails[a].Job_Id,
+                "count" : 1 ,
+                "job_heading" : Appileddetails[a].Posting_Recuriting_For,
+                "Posted_by" :  Appileddetails[a].Company_Name
+                }
+                datas_details.push(com);
+              } else {
+                let check  = 0 ;
+                for(let b = 0 ; b < datas_details.length ; b ++) {
+                    if(datas_details[b].Job_Id == Appileddetails[a].Job_Id){
+                        datas_details[b].count = datas_details[b].count + 1;
+                        check  = 1;
+                    }
+                if(b == datas_details.length - 1){
+                if(check==0){
+                let com = {
+                "Job_Id" : Appileddetails[a].Job_Id,
+                "count" : 1 ,
+                "job_heading" : Appileddetails[a].Posting_Recuriting_For,
+                "Posted_by" :  Appileddetails[a].Company_Name
+                }
+                datas_details.push(com);
+                }
+                    }
+                }
+              }
+               if(a == Appileddetails.length - 1){
+                res.json({Status:"Success",Message:"Appileddetails", Data : datas_details ,Code:200});
+               }
+          }
+         
+        });
+});
+
+
+
+router.get('/industriesgetlist', function (req, res) {
+        AppiledModel.find({}, function (err, Appileddetails) {
+          var datas_details = []
+          for(let a = 0 ; a < Appileddetails.length ;  a ++){
+              if(a == 0){
+                let com = {
+                "Job_Id" : Appileddetails[a].Job_Id,
+                "Industry" :  Appileddetails[a].Industry,
+                "count" : 1 ,
+                "job_heading" : Appileddetails[a].Posting_Recuriting_For,
+                 "Posted_by" :  Appileddetails[a].Company_Name
+                }
+                datas_details.push(com);
+              } else {
+                let check  = 0 ;
+                for(let b = 0 ; b < datas_details.length ; b ++) {
+                    if(datas_details[b].Industry == Appileddetails[a].Industry){
+                        datas_details[b].count = datas_details[b].count + 1;
+                        check  = 1;
+                    }
+                if(b == datas_details.length - 1){
+                if(check==0){
+                let com = {
+                "Job_Id" : Appileddetails[a].Job_Id,
+                "Industry" :  Appileddetails[a].Industry,
+                "count" : 1 ,
+                "job_heading" : Appileddetails[a].Posting_Recuriting_For,
+                 "Posted_by" :  Appileddetails[a].Company_Name
+                }
+                datas_details.push(com);
+                }
+                    }
+                }
+              }
+               if(a == Appileddetails.length - 1){
+                res.json({Status:"Success",Message:"Appileddetails", Data : datas_details ,Code:200});
+               }
+
+          }
+          
+        });
+});
+
+
+
 
 router.post('/getlist_id', function (req, res) {
         AppiledModel.find({Candidate_Id:req.body.Candidate_Id}, function (err, StateList) {
@@ -161,4 +270,5 @@ router.post('/delete', function (req, res) {
           res.json({Status:"Success",Message:"Appiled Deleted successfully", Data : {} ,Code:200});
       });
 });
+
 module.exports = router;

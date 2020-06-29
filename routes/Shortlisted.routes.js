@@ -122,6 +122,49 @@ router.post('/check_getlist_id', function (req, res) {
 
 
 
+router.get('/canshortgetlist', function (req, res) {
+        ShortlistedModel.find({}, function (err, Appileddetails) {
+          var datas_details = []
+          var candidate_details = []
+          for(let a = 0 ; a < Appileddetails.length ;  a ++){
+              if(a == 0){
+                let com = {
+                "count" : 1 ,
+                "fname" : Appileddetails[a].fname,
+                "Candidate_id" : Appileddetails[a].Candidate_id
+                }
+                datas_details.push(com);
+              } else {
+                let check  = 0 ;
+                for(let b = 0 ; b < datas_details.length ; b ++) {
+                    if(datas_details[b].Candidate_id == Appileddetails[a].Candidate_id){
+                        datas_details[b].count = datas_details[b].count + 1;
+                        check  = 1;
+                    }
+                if(b == datas_details.length - 1){
+                if(check==0){
+                let com = {
+                "count" : 1 ,
+                "fname" : Appileddetails[a].fname,
+                "Candidate_id" : Appileddetails[a].Candidate_id
+                }
+                datas_details.push(com);
+                }
+                    }
+                }
+              }
+               if(a == Appileddetails.length - 1){
+                res.json({Status:"Success",Message:"Appileddetails", Data : datas_details ,Code:200});
+               }
+          }
+        });
+});
+
+
+
+
+
+
 router.post('/edit', function (req, res) {
         ShortlistedModel.findByIdAndUpdate(req.body.Shortlisted_id, req.body, {new: true}, function (err, UpdatedDetails) {
             if (err) returnres.json({Status:"Failed",Message:"Internal Server Error", Data : {},Code:500});

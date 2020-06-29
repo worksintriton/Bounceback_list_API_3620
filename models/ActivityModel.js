@@ -15,3 +15,4 @@ var ActivitySchema = new mongoose.Schema({
 mongoose.model('Activity', ActivitySchema);
 
 module.exports = mongoose.model('Activity');
+

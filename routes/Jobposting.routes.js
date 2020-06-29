@@ -49,6 +49,51 @@ catch(e){
 }
 });
 
+
+
+router.get('/compensationgetlist', function (req, res) {
+        JobpostingModel.find({}, function (err, Appileddetails) {
+          var datas_details = []
+          for(let a = 0 ; a < Appileddetails.length ;  a ++){
+              if(a == 0){
+                let com = {
+                "Job_Id" : Appileddetails[a]._id,
+                "Compensation" :  Appileddetails[a].Compensation,
+                "count" : 1 ,
+                "job_heading" : Appileddetails[a].Posting_Recuriting_For,
+                 "Posted_by" :  Appileddetails[a].Company_Name
+                }
+                datas_details.push(com);
+              } else {
+                let check  = 0 ;
+                for(let b = 0 ; b < datas_details.length ; b ++) {
+                    if(datas_details[b].Compensation == Appileddetails[a].Compensation){
+                        datas_details[b].count = datas_details[b].count + 1;
+                        check  = 1;
+                    }
+                if(b == datas_details.length - 1){
+                if(check==0){
+                let com = {
+                "Job_Id" : Appileddetails[a]._id,
+                "Compensation" :  Appileddetails[a].Compensation,
+                "count" : 1 ,
+                "job_heading" : Appileddetails[a].Posting_Recuriting_For,
+                 "Posted_by" :  Appileddetails[a].Company_Name
+                }
+                datas_details.push(com);
+                }
+                    }
+                }
+              }
+               if(a == Appileddetails.length - 1){
+                res.json({Status:"Success",Message:"Appileddetails", Data : datas_details ,Code:200});
+               }
+          }
+        });
+});
+
+
+
 router.get('/deletes', function (req, res) {
       JobpostingModel.remove({}, function (err, user) {
           if (err) return res.status(500).send("There was a problem deleting the user.");

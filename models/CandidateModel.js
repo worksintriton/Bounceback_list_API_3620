@@ -1,8 +1,7 @@
 var mongoose = require('mongoose');
-
-
 const Schema = mongoose.Schema; 
-var CandidateSchema = new mongoose.Schema({    
+var CandidateSchema = new mongoose.Schema({  
+  
   nameTitle: String,
   fname:String,
   lname: String,
@@ -73,9 +72,6 @@ var CandidateSchema = new mongoose.Schema({
 
 
 });
-
-
-
 mongoose.model('Candidate', CandidateSchema);
 
 module.exports = mongoose.model('Candidate');
